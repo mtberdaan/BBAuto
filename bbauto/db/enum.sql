@@ -34,6 +34,11 @@ VALUES
 (1, 1, 'mail.example.com', false),
 (2, 1, '*.example.com', true);
 
+INSERT into "domain_dump" (id, domain_tld, domain, date_add)
+VALUES
+(1, 1, 'test.example.com', current_timestamp),
+(2, 1, 'dev.example.com', current_timestamp);
+
 
 ALTER TABLE ONLY domain_tld
     ADD CONSTRAINT domain_tld_pkey PRIMARY KEY (id);
