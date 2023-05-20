@@ -1,0 +1,4 @@
+resource_name: "crtsh"
+request_url: "https://crt.sh/?q={domain}&output=json"
+request_var: "{domain}"
+request_rate_limit: 3

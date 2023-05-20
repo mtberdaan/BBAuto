@@ -2,47 +2,38 @@ package main
 
 import (
 	"log"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
+	"recon/config"
+	"recon/resource"
 )
 
-func eventLoop(eventChan chan string) {
-	for {
-		// generate an event
-		event := time.Now().Format("2006-01-02 15:04:05")
+// implements Config interface and holds resource configuration
+type AppConfig struct {
+	ResourceCfgs map[string]config.ResourceConfig
+}
 
-		// sent the event to main loop
-		eventChan <- event
-
-		// simulate some work
-		time.Sleep(1 * time.Second)
-	}
+func (c *AppConfig) GetResourceCfgs() map[string]config.ResourceConfig {
+	return c.ResourceCfgs
 }
 
 func main() {
-	// channel to receive termination signals
-	signalChan := make(chan os.Signal, 1)
-	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
+	log.Print("INFO starting app...")
+	// initialize program configuration
+	c := &AppConfig{
+		ResourceCfgs: make(map[string]config.ResourceConfig),
+	}
 
-	// channel for events
-	eventChan := make(chan string)
+	log.Println("INFO loading app configs...")
+	// load other program config
 
-	// start event loop in goroutine
-	go eventLoop(eventChan)
+	log.Println("INFO loading resource configs...")
+	// load resource configs
+	err := resource.LoadConfigs("./resource/configs", c)
+	if err != nil {
+		log.Println("ERROR", err)
+		return
+	}
 
-	// Main event loop
-	for {
-		select {
-		case event := <-eventChan:
-			// process event
-			log.Println("processing event:", event)
-
-		case <-signalChan:
-			// termination signal received
-			log.Println("termination signal received. exiting...")
-			return
-		}
+	for _, r := range c.GetResourceCfgs() {
+		log.Println("found resource:", r.ResourceName)
 	}
 }
