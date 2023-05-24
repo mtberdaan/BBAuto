@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io"
 	"log"
 	"os"
 	"recon/config"
@@ -25,7 +26,8 @@ func main() {
 	}
 	defer logFile.Close()
 
-	log.SetOutput(logFile)
+	mw := io.MultiWriter(os.Stdout, logFile)
+	log.SetOutput(mw)
 
 	log.Println("...")
 	log.Println("...")
@@ -33,7 +35,7 @@ func main() {
 
 	log.SetFlags(log.Lshortfile | log.LstdFlags)
 
-	log.Print("INFO starting app...")
+	log.Println("INFO starting app...")
 
 	// initialize program configuration
 	c := &AppConfig{
@@ -51,9 +53,17 @@ func main() {
 		return
 	}
 
+	// log resources (handy for when it becomes possible to hot drop yamls)
 	for _, r := range c.GetResourceCfgs() {
 		log.Println("found resource:", r.ResourceName)
+		//request.Req(r, "example.com") // TODO move this to the eventloop
 	}
 
-	log.Print("INFO exit")
+	// load source domains from DB
+
+	// start eventloop (later implementation)
+
+	//(simple implementation)
+
+	log.Print("WARN exiting app...")
 }
